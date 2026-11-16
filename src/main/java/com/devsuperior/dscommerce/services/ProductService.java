@@ -16,11 +16,9 @@ import com.devsuperior.dscommerce.repositories.ProductRepository;
 public class ProductService {
 
 	/*
-	 * @Autowired 
-	 * Quando uma classe possui apenas um construtor, o Spring consegue
+	 * @Autowired Quando uma classe possui apenas um construtor, o Spring consegue
 	 * identificar automaticamente que ele deve ser utilizado para injeção de
-	 * dependências. 
-	 * Não precisamos de @Autowired porque, desde o Spring 4.3, quando
+	 * dependências. Não precisamos de @Autowired porque, desde o Spring 4.3, quando
 	 * existe apenas um construtor, ele é utilizado automaticamente para injeção de
 	 * dependências.
 	 */
@@ -44,11 +42,23 @@ public class ProductService {
 		ProductDTO dto = new ProductDTO(product);
 		return dto;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAll(Pageable pageable) {
 		Page<Product> result = repository.findAll(pageable);
 		return result.map(x -> new ProductDTO(x));
+	}
+
+	@Transactional
+	public ProductDTO insert(ProductDTO dto) {
+		Product entity = new Product();
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setPrice(dto.getPrice());
+		entity.setImgUrl(dto.getImgUrl());
+
+		entity = repository.save(entity);
+		return new ProductDTO(entity);
 	}
 
 }
