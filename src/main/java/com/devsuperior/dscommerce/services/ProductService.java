@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ProductService {
@@ -27,19 +28,24 @@ public class ProductService {
 		this.repository = repository;
 	}
 
+	/*
+	 * @Transactional(readOnly = true) public ProductDTO findById(Long id) {
+	 * 
+	 * 
+	 * Imagine que você tenha um método que busca um produto no banco de dados: Se o
+	 * produto não existir, o método retorna null. Em vez de retornar um objeto que
+	 * pode ser null, você retorna um Optional. Optional com um produto. Optional
+	 * vazio, quando o produto não existe.
+	 * 
+	 * // Optional<Product> result = repository.findById(id); Product product =
+	 * result.get(); ProductDTO dto = new ProductDTO(product); return dto; }
+	 */
+
 	@Transactional(readOnly = true)
 	public ProductDTO findById(Long id) {
-
-		/*
-		 * Imagine que você tenha um método que busca um produto no banco de dados: Se o
-		 * produto não existir, o método retorna null. Em vez de retornar um objeto que
-		 * pode ser null, você retorna um Optional. Optional com um produto. Optional
-		 * vazio, quando o produto não existe.
-		 */
-		Optional<Product> result = repository.findById(id);
-		Product product = result.get();
-		ProductDTO dto = new ProductDTO(product);
-		return dto;
+		Product product = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Recurso nao encontrado!"));
+		return new ProductDTO(product);
 	}
 
 	@Transactional(readOnly = true)
